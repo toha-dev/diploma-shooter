@@ -1,0 +1,20 @@
+{
+    "name": "DS.Core",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b906efc872a1da242a09e42518bd5165",
+        "GUID:6d52c86f80a477f4f88e465bd1e459f7",
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
