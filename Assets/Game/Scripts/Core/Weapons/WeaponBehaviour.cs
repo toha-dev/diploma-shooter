@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DS.Core.Projectiles;
 using DS.Utils.Attributes;
 using JetBrains.Annotations;
 using UnityEngine;
+using Zenject;
 
 namespace DS.Core.Weapons
 {
@@ -20,6 +22,9 @@ namespace DS.Core.Weapons
 
 		[field: SerializeField, ReadOnly]
 		private bool IsReloading { get; [UsedImplicitly] set; }
+
+		[Inject]
+		private IProjectileManager _projectileManager;
 
 		private int _magazineAmmo;
 		private int _ammoLeft;
@@ -97,10 +102,11 @@ namespace DS.Core.Weapons
 			_magazineAmmo--;
 			LastShootTime = Time.realtimeSinceStartupAsDouble;
 
-			var projectile = Instantiate(Config.Projectile, ProjectileSpawnPoint.position, ProjectileSpawnPoint.rotation);
-			projectile.Rigidbody.AddForce(projectile.transform.forward * Config.InitialProjectileSpeed);
+			_projectileManager.RegisterShot(ProjectileSpawnPoint.position, ProjectileSpawnPoint.rotation, Config.InitialProjectileForce);
+			//var projectile = Instantiate(Config.Projectile, ProjectileSpawnPoint.position, ProjectileSpawnPoint.rotation);
+			//projectile.Rigidbody.AddForce(projectile.transform.forward * Config.InitialProjectileForce);
 
-			Debug.LogError($"SHOOT {_magazineAmmo}/{_ammoLeft}");
+			//Debug.LogError($"SHOOT {_magazineAmmo}/{_ammoLeft}");
 		}
 	}
 }

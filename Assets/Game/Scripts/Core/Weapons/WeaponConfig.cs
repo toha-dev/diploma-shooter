@@ -14,14 +14,10 @@ namespace DS.Core.Weapons
 		public int MagazineAmmoCount { get; [UsedImplicitly] private set; }
 
 		[field: SerializeField]
-		public float Damage { get; [UsedImplicitly] private set; }
+		private float Damage { get; [UsedImplicitly] set; }
 
 		[field: SerializeField]
-		public ProjectileBehaviour Projectile { get; [UsedImplicitly] private set; }
-
-		[field: SerializeField]
-		[field: Tooltip("Initial projectile speed in meters per second")]
-		public float InitialProjectileSpeed { get; [UsedImplicitly] private set; }
+		public float InitialProjectileForce { get; [UsedImplicitly] private set; }
 
 		[field: SerializeField, ReadOnly]
 		private float MaxDamageDistance { get; [UsedImplicitly] set; } = 1000f;

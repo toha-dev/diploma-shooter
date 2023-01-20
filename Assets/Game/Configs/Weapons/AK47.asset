@@ -14,9 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <MaximumAmmoCount>k__BackingField: 120
   <MagazineAmmoCount>k__BackingField: 30
-  <Damage>k__BackingField: 0
-  <Projectile>k__BackingField: {fileID: 6458761957668745189, guid: cc0ff6d169387344aa01d21bccb0b995, type: 3}
-  <InitialProjectileSpeed>k__BackingField: 800
+  <Damage>k__BackingField: 30
+  <InitialProjectileForce>k__BackingField: 800
   <MaxDamageDistance>k__BackingField: 1000
   <MinDamageDistance>k__BackingField: 0
   <DistanceToCurveTimeMultiplier>k__BackingField: 0.001
