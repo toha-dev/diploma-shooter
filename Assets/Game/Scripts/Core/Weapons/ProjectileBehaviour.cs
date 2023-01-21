@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using Cysharp.Threading.Tasks;
 using DS.Core.Projectiles;
 using JetBrains.Annotations;
@@ -21,7 +20,10 @@ namespace DS.Core.Weapons
 
 		private void OnCollisionEnter(Collision other)
 		{
-			_projectileManager.RegisterHit(this, other);
+			if (_projectileManager.IsSpawned(this))
+			{
+				_projectileManager.RegisterHit(this, other);
+			}
 		}
 
 		private void FixedUpdate()
@@ -47,7 +49,7 @@ namespace DS.Core.Weapons
 						(int)(time * 1000),
 						cancellationToken: _cancellationToken.Token);
 
-					if (item._projectileManager.IsRegistered(item))
+					if (item._projectileManager.IsSpawned(item))
 					{
 						item._projectileManager.Unregister(item);
 					}

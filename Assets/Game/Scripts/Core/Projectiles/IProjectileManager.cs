@@ -5,7 +5,7 @@ namespace DS.Core.Projectiles
 {
 	public interface IProjectileManager
 	{
-		bool IsRegistered(ProjectileBehaviour projectileBehaviour);
+		bool IsSpawned(ProjectileBehaviour projectileBehaviour);
 
 		void RegisterShot(Vector3 initialPosition, Quaternion quaternion, float force);
 		void RegisterHit(ProjectileBehaviour projectileBehaviour, Collision other);

@@ -13,15 +13,19 @@ namespace DS.Core.Projectiles
 		[Inject]
 		private ProjectileDecalBehaviour.DecalPool _projectileDecalPool;
 
-		private readonly List<ProjectileBehaviour> _projectiles = new();
+		private readonly HashSet<ProjectileBehaviour> _projectiles = new();
 
 		private void OnDisable()
 		{
-			_projectiles.ForEach(x => _projectilePool.Despawn(x));
+			foreach (var projectile in _projectiles)
+			{
+				_projectilePool.Despawn(projectile);
+			}
+
 			_projectiles.Clear();
 		}
 
-		public bool IsRegistered(ProjectileBehaviour projectileBehaviour)
+		public bool IsSpawned(ProjectileBehaviour projectileBehaviour)
 		{
 			return _projectiles.Contains(projectileBehaviour);
 		}
