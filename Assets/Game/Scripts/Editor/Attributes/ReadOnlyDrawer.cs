@@ -1,7 +1,8 @@
-﻿using UnityEditor;
+﻿using DS.Utils.Attributes;
+using UnityEditor;
 using UnityEngine;
 
-namespace DS.Utils.Attributes
+namespace DS.Editor.Attributes
 {
 	[CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
 	public class ReadOnlyDrawer : PropertyDrawer
