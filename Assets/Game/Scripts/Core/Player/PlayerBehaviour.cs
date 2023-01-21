@@ -1,16 +1,17 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using Cysharp.Threading.Tasks;
 using DS.Core.Weapons;
 using DS.Utils.Attributes;
 using JetBrains.Annotations;
-using ModestTree;
 using UnityEngine;
 
 namespace DS.Core.Player
 {
 	public class PlayerBehaviour : MonoBehaviour
 	{
+		[field: SerializeField]
+		private Camera FirstPersonCamera { get; [UsedImplicitly] set; }
+
 		[field: SerializeField]
 		private WeaponBehaviour PrimaryWeaponSlot { get; [UsedImplicitly] set; }
 
@@ -50,9 +51,31 @@ namespace DS.Core.Player
 				while (!_cancellationToken.IsCancellationRequested
 						&& IsShooting)
 				{
-					_selectedWeapon.TryShoot();
+					_selectedWeapon.TryShootToPosition(GetShootPosition());
 					await UniTask.Yield(PlayerLoopTiming.FixedUpdate, _cancellationToken.Token);
 				}
+			}
+
+			Vector3 GetShootPosition()
+			{
+				var cameraTransform = FirstPersonCamera.transform;
+				RaycastHit hit;
+
+				if (!Physics.Raycast(
+					cameraTransform.position,
+					cameraTransform.forward,
+					out hit,
+					Mathf.Infinity))
+				{
+					return cameraTransform.forward * 1000f;
+				}
+
+				Debug.DrawRay(
+					cameraTransform.position,
+					cameraTransform.forward * hit.distance,
+					Color.red);
+
+				return hit.point;
 			}
 		}
 

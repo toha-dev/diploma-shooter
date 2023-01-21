@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using DS.Core.Weapons;
 using UnityEngine;
@@ -36,15 +34,11 @@ namespace DS.Core.Projectiles
 
 			projectileTransform.position = initialPosition;
 			projectileTransform.rotation = quaternion;
-			
-			// TODO
-			Physics.SyncTransforms();
 
 			projectile.Rigidbody.velocity = Vector3.zero;
 			projectile.Rigidbody.angularVelocity = Vector3.zero;
 
 			projectile.Rigidbody.AddForce(projectileTransform.forward * force);
-
 
 			_projectiles.Add(projectile);
 		}

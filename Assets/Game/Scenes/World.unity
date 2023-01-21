@@ -281,9 +281,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ee500a68d5a4d1cbcadfe15d816d14e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <FirstPersonCamera>k__BackingField: {fileID: 963194227}
   <PrimaryWeaponSlot>k__BackingField: {fileID: 705150957}
   <SecondaryWeaponSlot>k__BackingField: {fileID: 0}
   <IsShooting>k__BackingField: 0
+  <LookAt>k__BackingField: {x: 0, y: 0, z: 0}
 --- !u!43 &687945529
 Mesh:
   m_ObjectHideFlags: 0
@@ -726,7 +728,7 @@ GameObject:
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: MainCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -82,7 +82,7 @@ Transform:
   - {fileID: 2396323085963723894}
   - {fileID: 2396323087516591841}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2396323087063419299
 GameObject:
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 2396323087063419297}
   - component: {fileID: 2396323087063419298}
   m_Layer: 0
-  m_Name: Sky and Fog Global Volume
+  m_Name: SkyAndFogGlobalVolume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

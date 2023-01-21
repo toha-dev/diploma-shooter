@@ -48,7 +48,7 @@ namespace DS.Core.Weapons
 			_cancellationToken = null;
 		}
 
-		public bool TryShoot()
+		public bool TryShootToPosition(Vector3 shootPosition)
 		{
 			var nextShootTime = LastShootTime + Config.FireDelay;
 
@@ -59,7 +59,7 @@ namespace DS.Core.Weapons
 				return false;
 			}
 
-			Shoot();
+			ShootToPosition(shootPosition);
 			return true;
 
 		}
@@ -97,16 +97,26 @@ namespace DS.Core.Weapons
 			IsReloading = false;
 		}
 
-		private void Shoot()
+		private void ShootToPosition(Vector3 shootPosition)
 		{
 			_magazineAmmo--;
 			LastShootTime = Time.realtimeSinceStartupAsDouble;
 
-			_projectileManager.RegisterShot(ProjectileSpawnPoint.position, ProjectileSpawnPoint.rotation, Config.InitialProjectileForce);
-			//var projectile = Instantiate(Config.Projectile, ProjectileSpawnPoint.position, ProjectileSpawnPoint.rotation);
-			//projectile.Rigidbody.AddForce(projectile.transform.forward * Config.InitialProjectileForce);
+			var projectilePosition = ProjectileSpawnPoint.position;
+			var targetDirection = shootPosition - projectilePosition;
 
-			//Debug.LogError($"SHOOT {_magazineAmmo}/{_ammoLeft}");
+			var newDirection = Vector3.RotateTowards(
+				transform.forward,
+				targetDirection,
+				float.MaxValue,
+				float.MaxValue);
+
+			var rotation = Quaternion.LookRotation(newDirection);
+
+			_projectileManager.RegisterShot(
+				projectilePosition,
+				rotation,
+				Config.InitialProjectileForce);
 		}
 	}
 }

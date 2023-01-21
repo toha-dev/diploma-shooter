@@ -6,8 +6,6 @@ namespace DS.Core.Projectiles
 {
 	public class ProjectileDecalBehaviour : MonoBehaviour
 	{
-		
-		
 		[UsedImplicitly]
 		public class DecalPool : MonoMemoryPool<ProjectileDecalBehaviour>
 		{
