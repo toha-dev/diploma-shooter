@@ -2,18 +2,21 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Launcher : MonoBehaviour
+namespace DS.Simulation
 {
-	private void Awake()
+	public class Launcher : MonoBehaviour
 	{
-		LoadMenuScene().Forget();
-	}
+		private void Start()
+		{
+			LoadMenuScene().Forget();
+		}
 
-	private static async UniTaskVoid LoadMenuScene()
-	{
-		await SceneLoader.LoadSceneAsync(
-			SceneLoader.MainMenuSceneName,
-			LoadSceneMode.Additive,
-			showLoadingScreen: false);
+		private static async UniTaskVoid LoadMenuScene()
+		{
+			await SceneLoader.LoadSceneAsync(
+				SceneLoader.MainMenuSceneName,
+				LoadSceneMode.Single,
+				showLoadingScreen: false);
+		}
 	}
 }

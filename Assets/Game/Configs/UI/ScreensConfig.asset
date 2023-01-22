@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bcbe464970c4489a80dc16c636c7a22, type: 3}
+  m_Name: ScreensConfig
+  m_EditorClassIdentifier: 
+  <ScreensFolder>k__BackingField: Assets/Game/Prefabs/UI/Screens
+  <ScreensAssets>k__BackingField:
+  - <ScreenType>k__BackingField: 3
+    <AssetReference>k__BackingField:
+      m_AssetGUID: 9445cc5e182bd644c86ba8ae5767065d
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - <ScreenType>k__BackingField: 2
+    <AssetReference>k__BackingField:
+      m_AssetGUID: d159f8199d072204da1b5680e90ea3db
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - <ScreenType>k__BackingField: 1
+    <AssetReference>k__BackingField:
+      m_AssetGUID: c0a51956c2982044da33819252f4ecb5
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0

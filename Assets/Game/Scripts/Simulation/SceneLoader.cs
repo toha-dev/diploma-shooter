@@ -1,54 +1,50 @@
 using Cysharp.Threading.Tasks;
+using UniRx;
 using UnityEngine.SceneManagement;
 
-public static class SceneLoader
+namespace DS.Simulation
 {
-	private const string LoadingSceneName = "Loading";
-
-	public const string MainMenuSceneName = "MainMenu";
-	public const string WorldSceneName = "World";
-
-	public static float LoadingProgress { get; private set; }
-
-	public static async UniTask<AsyncUnit> LoadSceneAsync(
-		string sceneName,
-		LoadSceneMode mode,
-		bool showLoadingScreen)
+	public static class SceneLoader
 	{
-		var completionSource = new UniTaskCompletionSource<AsyncUnit>();
+		public const string LoadingSceneName = "Loading";
+		public const string MainMenuSceneName = "MainMenu";
+		public const string WorldSceneName = "World";
 
-		if (showLoadingScreen)
+		public static IReadOnlyReactiveProperty<float> LoadingProgress => InternalLoadingProgress;
+		private static readonly ReactiveProperty<float> InternalLoadingProgress = new();
+
+		public static async UniTask<AsyncUnit> LoadSceneAsync(
+			string sceneName,
+			LoadSceneMode mode,
+			bool showLoadingScreen)
 		{
-			await SceneManager.LoadSceneAsync(LoadingSceneName, mode);
+			if (showLoadingScreen)
+			{
+				await SceneManager.LoadSceneAsync(LoadingSceneName, LoadSceneMode.Additive);
+			}
+
+			var sceneLoad = SceneManager.LoadSceneAsync(sceneName, mode);
+
+			while (!sceneLoad.isDone)
+			{
+				InternalLoadingProgress.Value = sceneLoad.progress;
+				await UniTask.Yield(PlayerLoopTiming.Update);
+			}
+
+			if (showLoadingScreen && mode != LoadSceneMode.Single)
+			{
+				await SceneManager.UnloadSceneAsync(LoadingSceneName);
+			}
+
+			return AsyncUnit.Default;
 		}
 
-		var sceneLoad = SceneManager.LoadSceneAsync(sceneName, mode);
-
-		while (!sceneLoad.isDone)
+		public static async UniTask<AsyncUnit> UnloadSceneAsync(
+			string sceneName,
+			UnloadSceneOptions options = UnloadSceneOptions.UnloadAllEmbeddedSceneObjects)
 		{
-			LoadingProgress = sceneLoad.progress;
-			await UniTask.Yield(PlayerLoopTiming.Update);
+			await SceneManager.UnloadSceneAsync(sceneName, options);
+			return AsyncUnit.Default;
 		}
-
-		if (showLoadingScreen)
-		{
-			SceneManager.UnloadSceneAsync(LoadingSceneName);
-		}
-
-		completionSource.TrySetResult(AsyncUnit.Default);
-
-		return AsyncUnit.Default;
-	}
-
-	public static async UniTask<AsyncUnit> UnloadSceneAsync(
-		string sceneName,
-		UnloadSceneOptions options = UnloadSceneOptions.UnloadAllEmbeddedSceneObjects)
-	{
-		var completionSource = new UniTaskCompletionSource<AsyncUnit>();
-
-		await SceneManager.UnloadSceneAsync(sceneName, options);
-
-		completionSource.TrySetResult(AsyncUnit.Default);
-		return AsyncUnit.Default;
 	}
 }

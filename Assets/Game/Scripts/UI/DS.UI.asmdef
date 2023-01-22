@@ -2,9 +2,14 @@
     "name": "DS.UI",
     "rootNamespace": "",
     "references": [
+        "GUID:6d52c86f80a477f4f88e465bd1e459f7",
+        "GUID:b906efc872a1da242a09e42518bd5165",
+        "GUID:98d2a96ae31acc54aad5f087a415c526",
         "GUID:e8c48b50dc126b9418c703994162ac35",
         "GUID:6055be8ebefd69e48b49212b09b47b2f",
-        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
