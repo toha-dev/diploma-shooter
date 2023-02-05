@@ -13,17 +13,20 @@ namespace DS.Simulation
 		[Inject]
 		private IGuiService _guiService;
 
-		private async void Start()
+		private async void Awake()
 		{
 			await _guiService.ShowScreenAsync<MainMenuViewModel>(
 				ScreenType.MainMenu,
 				GuiLayer.Stack,
 				viewModel => viewModel.SetData(LoadWorld, ExitGame));
+
+			Application.UpdateState(ApplicationState.MainMenu);
 		}
 
 		private async void LoadWorld()
 		{
-			Application.SetGameParameters(GameModeType.Free, GameMap.FreeModeMap);
+			Application.RunWithParameters(GameModeType.Free, GameMap.FreeModeMap);
+			Application.UpdateState(ApplicationState.Loading);
 
 			_guiService.ShowScreenAsync<LoadingScreenViewModel>(
 				ScreenType.Loading,
@@ -33,6 +36,7 @@ namespace DS.Simulation
 					viewModel.SetData(SceneLoader.LoadingProgress, () =>
 					{
 						_guiService.HideScreen(ScreenType.Loading, GuiLayer.Overlay);
+						Application.UpdateState(ApplicationState.Running);
 					});
 				});
 
@@ -42,6 +46,8 @@ namespace DS.Simulation
 					(SceneLoader.WorldSceneName, LoadSceneMode.Single),
 					(Application.GameMap.ToString(), LoadSceneMode.Additive),
 				});
+
+			Application.UpdateState(ApplicationState.Loaded);
 		}
 
 		private static void ExitGame()

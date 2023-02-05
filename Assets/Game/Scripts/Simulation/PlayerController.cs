@@ -1,4 +1,7 @@
-﻿using DS.Core.Player;
+﻿using Cysharp.Threading.Tasks;
+using DS.Core.Player;
+using DS.UI.Base.Gui;
+using DS.UI.Base.ViewModels;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -12,6 +15,9 @@ namespace DS.Simulation
 
 		[Inject]
 		private PlayerInputActions _playerInputActions;
+
+		[Inject]
+		private IGuiService _guiService;
 
 		public IPlayerEntity Player { get; private set; }
 
@@ -30,7 +36,7 @@ namespace DS.Simulation
 			Player.Reload();
 		}
 
-		public void SpawnPlayer()
+		public async void SpawnPlayer()
 		{
 			Player = _playerFactory.Create();
 
@@ -38,7 +44,10 @@ namespace DS.Simulation
 			_playerInputActions.Weapon.Shoot.canceled += HandlePlayerShootEnd;
 			_playerInputActions.Weapon.Reload.started += HandlePlayerReload;
 
+			await UniTask.WaitWhile(() => Application.State.Value != ApplicationState.Running);
+
 			_playerInputActions.Enable();
+			_guiService.ShowScreenAsync<HudViewModel>(ScreenType.HudScreen, GuiLayer.Stack);
 		}
 
 		public void DestroyPlayer()
