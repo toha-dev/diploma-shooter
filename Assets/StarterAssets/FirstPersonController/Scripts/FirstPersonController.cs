@@ -86,6 +86,11 @@ namespace StarterAssets
 			}
 		}
 
+		public void RotateX(float offsetX)
+		{
+			_cinemachineTargetPitch += offsetX;
+		}
+
 		private void Awake()
 		{
 			// get a reference to our main camera
@@ -136,7 +141,7 @@ namespace StarterAssets
 			{
 				//Don't multiply mouse input by Time.deltaTime
 				float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-				
+
 				_cinemachineTargetPitch += _input.look.y * RotationSpeed * deltaTimeMultiplier;
 				_rotationVelocity = _input.look.x * RotationSpeed * deltaTimeMultiplier;
 

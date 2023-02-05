@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2834.2646, g: 3244.7314, b: 3882.022, a: 1}
+  m_IndirectSpecularColor: {r: 262.3369, g: 325.0498, b: 430.21924, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -168,9 +168,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <PlayerEntity>k__BackingField: {fileID: 659314481, guid: f040a0de0db29944fabd5ba5b086826d, type: 3}
-  <Maps>k__BackingField:
-  - <GameMap>k__BackingField: 0
-    <MapSceneName>k__BackingField: FreeModeMap
 --- !u!1 &297465838
 GameObject:
   m_ObjectHideFlags: 0
@@ -331,7 +328,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <ProjectileManager>k__BackingField: {fileID: 1357758550}
   <ProjectileParentForPool>k__BackingField: {fileID: 854151959}
-  <Projectile>k__BackingField: {fileID: 6458761957668745189, guid: cc0ff6d169387344aa01d21bccb0b995, type: 3}
+  <Projectile>k__BackingField: {fileID: 130563909, guid: 1aa63629d04c8b14998a8d79bc070f08, type: 3}
   <ProjectileDecalParentForPool>k__BackingField: {fileID: 509361868}
   <ProjectileDecal>k__BackingField: {fileID: 1729700211716356139, guid: 0fbdeb6af4ff32c4daa78f665164e21b, type: 3}
 --- !u!4 &1092040285

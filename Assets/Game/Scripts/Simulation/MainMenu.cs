@@ -28,7 +28,7 @@ namespace DS.Simulation
 			Application.RunWithParameters(GameModeType.Free, GameMap.FreeModeMap);
 			Application.UpdateState(ApplicationState.Loading);
 
-			_guiService.ShowScreenAsync<LoadingScreenViewModel>(
+			await _guiService.ShowScreenAsync<LoadingScreenViewModel>(
 				ScreenType.Loading,
 				GuiLayer.Overlay,
 				viewModel =>

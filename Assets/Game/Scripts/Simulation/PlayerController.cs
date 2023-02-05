@@ -47,7 +47,7 @@ namespace DS.Simulation
 			await UniTask.WaitWhile(() => Application.State.Value != ApplicationState.Running);
 
 			_playerInputActions.Enable();
-			_guiService.ShowScreenAsync<HudViewModel>(ScreenType.HudScreen, GuiLayer.Stack);
+			await _guiService.ShowScreenAsync<HudViewModel>(ScreenType.HudScreen, GuiLayer.Stack);
 		}
 
 		public void DestroyPlayer()

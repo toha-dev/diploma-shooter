@@ -15,7 +15,10 @@ namespace DS.Core.Weapons
 		private WeaponConfig Config { get; [UsedImplicitly] set; }
 
 		[field: SerializeField]
-		private Transform ProjectileSpawnPoint { get; [UsedImplicitly] set; }
+		private Animator Animator { get; [UsedImplicitly] set; }
+
+		[field: SerializeField]
+		private Transform BarrelLocation { get; [UsedImplicitly] set; }
 
 		[field: SerializeField, ReadOnly]
 		private double LastShootTime { get; set; } = double.MinValue;
@@ -48,7 +51,7 @@ namespace DS.Core.Weapons
 			_cancellationToken = null;
 		}
 
-		public bool TryShootToPosition(Vector3 shootPosition)
+		public bool TryShootToPosition(Vector3 shootPosition, Action<Vector3> recoilCallback = null)
 		{
 			var nextShootTime = LastShootTime + Config.FireDelay;
 
@@ -60,8 +63,8 @@ namespace DS.Core.Weapons
 			}
 
 			ShootToPosition(shootPosition);
+			recoilCallback?.Invoke(new Vector3(1, 0.5f, 0));
 			return true;
-
 		}
 
 		public bool TryReload()
@@ -102,7 +105,8 @@ namespace DS.Core.Weapons
 			_magazineAmmo--;
 			LastShootTime = Time.realtimeSinceStartupAsDouble;
 
-			var projectilePosition = ProjectileSpawnPoint.position;
+			var position = BarrelLocation.position;
+			var projectilePosition = position;
 			var targetDirection = shootPosition - projectilePosition;
 
 			var newDirection = Vector3.RotateTowards(
@@ -117,6 +121,8 @@ namespace DS.Core.Weapons
 				projectilePosition,
 				rotation,
 				Config.InitialProjectileForce);
+
+			Animator.SetTrigger("Fire");
 		}
 	}
 }

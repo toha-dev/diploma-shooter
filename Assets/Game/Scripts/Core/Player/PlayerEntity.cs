@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using DS.Core.Weapons;
 using DS.Utils.Attributes;
 using JetBrains.Annotations;
+using StarterAssets;
 using UnityEngine;
 using Zenject;
 
@@ -11,6 +12,9 @@ namespace DS.Core.Player
 {
 	public class PlayerEntity : MonoBehaviour, IPlayerEntity
 	{
+		[field: SerializeField]
+		private FirstPersonController FirstPersonController { get; [UsedImplicitly] set; }
+
 		[field: SerializeField]
 		private Camera FirstPersonCamera { get; [UsedImplicitly] set; }
 
@@ -65,7 +69,7 @@ namespace DS.Core.Player
 				while (!_cancellationToken.IsCancellationRequested
 						&& IsShooting)
 				{
-					_selectedWeapon.TryShootToPosition(GetShootPosition());
+					_selectedWeapon.TryShootToPosition(GetShootPosition(), HandleRecoil);
 					await UniTask.Yield(PlayerLoopTiming.FixedUpdate, _cancellationToken.Token);
 				}
 			}
@@ -90,6 +94,16 @@ namespace DS.Core.Player
 
 				return hit.point;
 			}
+		}
+
+		private void HandleRecoil(Vector3 recoilOffset)
+		{
+			var xOffset = recoilOffset.x;
+			var yOffset = recoilOffset.y;
+
+			FirstPersonController.RotateX(-xOffset);
+			FirstPersonCamera.transform.parent.transform.Rotate(new Vector3(-xOffset, 0, 0));
+			gameObject.transform.Rotate(new Vector3(0, yOffset, 0));
 		}
 
 		public void EndShooting()
