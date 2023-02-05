@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using DS.Simulation.GameModes;
 using DS.UI.Base.Gui;
 using DS.UI.Base.ViewModels;
 using UnityEngine;
@@ -19,17 +21,32 @@ namespace DS.Simulation
 				viewModel => viewModel.SetData(LoadWorld, ExitGame));
 		}
 
-		private static async void LoadWorld()
+		private async void LoadWorld()
 		{
-			await SceneLoader.LoadSceneAsync(
-				SceneLoader.WorldSceneName,
-				LoadSceneMode.Single,
-				showLoadingScreen: true);
+			Application.SetGameParameters(GameModeType.Free, GameMap.FreeModeMap);
+
+			_guiService.ShowScreenAsync<LoadingScreenViewModel>(
+				ScreenType.Loading,
+				GuiLayer.Overlay,
+				viewModel =>
+				{
+					viewModel.SetData(SceneLoader.LoadingProgress, () =>
+					{
+						_guiService.HideScreen(ScreenType.Loading, GuiLayer.Overlay);
+					});
+				});
+
+			await SceneLoader.LoadScenesInQueueAsync(
+				new List<(string name, LoadSceneMode mode)>
+				{
+					(SceneLoader.WorldSceneName, LoadSceneMode.Single),
+					(Application.GameMap.ToString(), LoadSceneMode.Additive),
+				});
 		}
 
 		private static void ExitGame()
 		{
-			Application.Quit();
+			UnityEngine.Application.Quit();
 		}
 
 		private void OnDestroy()

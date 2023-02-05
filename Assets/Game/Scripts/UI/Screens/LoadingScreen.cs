@@ -1,3 +1,4 @@
+using System;
 using DS.UI.Base.Gui;
 using DS.UI.Base.ViewModels;
 using JetBrains.Annotations;
@@ -17,18 +18,28 @@ namespace DS.UI.Screens
 		[field: SerializeField]
 		private TextMeshProUGUI LoadingProgressText { get; [UsedImplicitly] set; }
 
+		[field: SerializeField]
+		private GameObject PressAnyKeyText { get; [UsedImplicitly] set; }
+
 		[Inject]
 		private UiInputActions _uiInputActions;
 
 		protected override void Show()
 		{
-			_uiInputActions.Enable();
+			PressAnyKeyText.SetActive(false);
+
 			_uiInputActions.UI.AnyKey.performed += ViewModel.HandleAnyButtonClick;
 
-			ViewModel.LoadingProgress.Subscribe(x =>
+			ViewModel.LoadingProgress.Skip(1).Subscribe(x =>
 			{
 				LoadingProgressBar.value = x;
 				LoadingProgressText.text = $"{(int)(x * 100)}%";
+
+				if (Math.Abs(x - 1) < 0.001)
+				{
+					PressAnyKeyText.SetActive(true);
+					_uiInputActions.Enable();
+				}
 			}).AddTo(Disposables);
 		}
 

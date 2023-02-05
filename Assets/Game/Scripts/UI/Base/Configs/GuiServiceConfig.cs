@@ -39,6 +39,9 @@ namespace DS.UI.Base.Configs
 		[field: SerializeField, ReadOnly]
 		internal List<ScreenAssetReference> ScreensAssets { get; [UsedImplicitly] private set; } = new();
 
+		[field: SerializeField]
+		internal bool PreloadAllScreens { get; [UsedImplicitly] private set; }
+
 #if UNITY_EDITOR
 		private void OnValidate()
 		{

@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine.SceneManagement;
@@ -13,29 +16,57 @@ namespace DS.Simulation
 		public static IReadOnlyReactiveProperty<float> LoadingProgress => InternalLoadingProgress;
 		private static readonly ReactiveProperty<float> InternalLoadingProgress = new();
 
-		public static async UniTask<AsyncUnit> LoadSceneAsync(
-			string sceneName,
-			LoadSceneMode mode,
-			bool showLoadingScreen)
+		public static async UniTask<AsyncUnit> LoadScenesInQueueAsync(
+			IEnumerable<(string name, LoadSceneMode mode)> scenes)
 		{
-			if (showLoadingScreen)
+			var scenesArray = scenes as (string name, LoadSceneMode mode)[] ?? scenes.ToArray();
+
+			var sceneLoadingIndex = 0;
+
+			foreach (var (name, mode) in scenesArray)
 			{
-				await SceneManager.LoadSceneAsync(LoadingSceneName, LoadSceneMode.Additive);
+				await LoadSceneAsync(
+					name,
+					mode,
+					progress =>
+					{
+						InternalLoadingProgress.Value =
+							(float)sceneLoadingIndex / scenesArray.Length
+							+ progress / scenesArray.Length;
+					});
+
+				sceneLoadingIndex++;
 			}
 
+			return AsyncUnit.Default;
+		}
+
+		public static async UniTask<AsyncUnit> LoadSceneAsync(
+			string sceneName,
+			LoadSceneMode mode)
+		{
+			await LoadSceneAsync(
+				sceneName,
+				mode,
+				progress => InternalLoadingProgress.Value = progress);
+
+			return AsyncUnit.Default;
+		}
+
+		private static async UniTask<AsyncUnit> LoadSceneAsync(
+			string sceneName,
+			LoadSceneMode mode,
+			Action<float> progressCallback)
+		{
 			var sceneLoad = SceneManager.LoadSceneAsync(sceneName, mode);
 
 			while (!sceneLoad.isDone)
 			{
-				InternalLoadingProgress.Value = sceneLoad.progress;
+				progressCallback?.Invoke(sceneLoad.progress);
 				await UniTask.Yield(PlayerLoopTiming.Update);
 			}
 
-			if (showLoadingScreen && mode != LoadSceneMode.Single)
-			{
-				await SceneManager.UnloadSceneAsync(LoadingSceneName);
-			}
-
+			progressCallback?.Invoke(1);
 			return AsyncUnit.Default;
 		}
 

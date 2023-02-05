@@ -1,13 +1,15 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DS.Core.Weapons;
 using DS.Utils.Attributes;
 using JetBrains.Annotations;
 using UnityEngine;
+using Zenject;
 
 namespace DS.Core.Player
 {
-	public class PlayerBehaviour : MonoBehaviour
+	public class PlayerEntity : MonoBehaviour, IPlayerEntity
 	{
 		[field: SerializeField]
 		private Camera FirstPersonCamera { get; [UsedImplicitly] set; }
@@ -21,12 +23,24 @@ namespace DS.Core.Player
 		[field: SerializeField, ReadOnly]
 		private bool IsShooting { get; set; }
 
+		public GameObject GameObject => gameObject;
+
+		public event Action EventPlayerSpawned;
+		public event Action EventPlayerDespawned;
+		public event Action EventPlayerDead;
+
 		private WeaponBehaviour _selectedWeapon;
 		private CancellationTokenSource _cancellationToken;
 
 		private void Awake()
 		{
 			_selectedWeapon = PrimaryWeaponSlot ? PrimaryWeaponSlot : SecondaryWeaponSlot;
+			EventPlayerSpawned?.Invoke();
+		}
+
+		private void OnDestroy()
+		{
+			EventPlayerDespawned?.Invoke();
 		}
 
 		private void OnEnable()
@@ -59,12 +73,11 @@ namespace DS.Core.Player
 			Vector3 GetShootPosition()
 			{
 				var cameraTransform = FirstPersonCamera.transform;
-				RaycastHit hit;
 
 				if (!Physics.Raycast(
 					cameraTransform.position,
 					cameraTransform.forward,
-					out hit,
+					out var hit,
 					Mathf.Infinity))
 				{
 					return cameraTransform.forward * 1000f;
@@ -87,6 +100,10 @@ namespace DS.Core.Player
 		public void Reload()
 		{
 			_selectedWeapon.TryReload();
+		}
+
+		public class Factory : PlaceholderFactory<PlayerEntity>
+		{
 		}
 	}
 }

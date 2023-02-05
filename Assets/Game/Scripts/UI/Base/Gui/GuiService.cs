@@ -48,7 +48,9 @@ namespace DS.UI.Base.Gui
 		private readonly List<ScreenType> _inProgress = new();
 		private readonly List<ScreenType> _hideRequested = new();
 
-		private void Awake()
+		private bool _waitingPreload;
+
+		private async void Awake()
 		{
 			foreach (var screen in Config.ScreensAssets)
 			{
@@ -59,6 +61,29 @@ namespace DS.UI.Base.Gui
 			{
 				_layers.Add(layer.GuiLayer, layer.Parent);
 			}
+
+			if (!Config.PreloadAllScreens)
+			{
+				return;
+			}
+
+			_waitingPreload = true;
+
+			foreach (var screen in Config.ScreensAssets)
+			{
+				var asyncOperationHandle = screen.AssetReference.LoadAssetAsync<GameObject>();
+
+				await asyncOperationHandle;
+
+				if (asyncOperationHandle.Status != AsyncOperationStatus.Succeeded)
+				{
+					throw new ArgumentException($"Can't preload a screen {screen.ScreenType}!");
+				}
+
+				_loadedScreens[screen.AssetReference] = (asyncOperationHandle.Result, 1);
+			}
+
+			_waitingPreload = false;
 		}
 
 		public async UniTask<T> ShowScreenAsync<T>(
@@ -67,6 +92,11 @@ namespace DS.UI.Base.Gui
 			Action<T> callback = null)
 			where T : ScreenViewModel
 		{
+			if (_waitingPreload)
+			{
+				await UniTask.WaitWhile(() => _waitingPreload);
+			}
+
 			_inProgress.Add(screenType);
 
 			var screenToLoad = _screens[screenType];

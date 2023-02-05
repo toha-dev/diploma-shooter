@@ -4,47 +4,45 @@ using JetBrains.Annotations;
 using UnityEngine;
 using Zenject;
 
-public class WorldInstaller : MonoInstaller
+namespace DS.Core.Installers
 {
-	[field: SerializeField]
-	private ProjectileManager ProjectileManager { get; [UsedImplicitly] set; }
-
-	[field: SerializeField]
-	private Transform ProjectileParentForPool { get; [UsedImplicitly] set; }
-
-	[field: SerializeField]
-	private ProjectileBehaviour Projectile { get; [UsedImplicitly] set; }
-
-	[field: SerializeField]
-	private Transform ProjectileDecalParentForPool { get; [UsedImplicitly] set; }
-
-	[field: SerializeField]
-	private ProjectileDecalBehaviour ProjectileDecal { get; [UsedImplicitly] set; }
-
-	public override void InstallBindings()
+	public class WorldInstaller : MonoInstaller
 	{
-		Container
-			.Bind<IProjectileManager>()
-			.To<ProjectileManager>()
-			.FromInstance(ProjectileManager)
-			.AsSingle()
-			.NonLazy();
-		
-		Container
-			.Bind<PlayerInputActions>()
-			.FromNew()
-			.AsSingle()
-			.NonLazy();
+		[field: SerializeField] private ProjectileManager ProjectileManager { get; [UsedImplicitly] set; }
 
-		Container
-			.BindMemoryPool<ProjectileBehaviour, ProjectileBehaviour.ProjectilePool>()
-			.WithInitialSize(10)
-			.FromComponentInNewPrefab(Projectile)
-			.UnderTransform(ProjectileParentForPool);
+		[field: SerializeField] private Transform ProjectileParentForPool { get; [UsedImplicitly] set; }
 
-		Container.BindMemoryPool<ProjectileDecalBehaviour, ProjectileDecalBehaviour.DecalPool>()
-			.WithInitialSize(10)
-			.FromComponentInNewPrefab(ProjectileDecal)
-			.UnderTransform(ProjectileDecalParentForPool);
+		[field: SerializeField] private ProjectileBehaviour Projectile { get; [UsedImplicitly] set; }
+
+		[field: SerializeField] private Transform ProjectileDecalParentForPool { get; [UsedImplicitly] set; }
+
+		[field: SerializeField] private ProjectileDecalBehaviour ProjectileDecal { get; [UsedImplicitly] set; }
+
+		public override void InstallBindings()
+		{
+			Container
+				.Bind<IProjectileManager>()
+				.To<ProjectileManager>()
+				.FromInstance(ProjectileManager)
+				.AsSingle()
+				.NonLazy();
+
+			Container
+				.Bind<PlayerInputActions>()
+				.FromNew()
+				.AsSingle()
+				.NonLazy();
+
+			Container
+				.BindMemoryPool<ProjectileBehaviour, ProjectileBehaviour.ProjectilePool>()
+				.WithInitialSize(10)
+				.FromComponentInNewPrefab(Projectile)
+				.UnderTransform(ProjectileParentForPool);
+
+			Container.BindMemoryPool<ProjectileDecalBehaviour, ProjectileDecalBehaviour.DecalPool>()
+				.WithInitialSize(10)
+				.FromComponentInNewPrefab(ProjectileDecal)
+				.UnderTransform(ProjectileDecalParentForPool);
+		}
 	}
 }

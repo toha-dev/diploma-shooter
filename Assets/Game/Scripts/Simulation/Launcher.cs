@@ -15,8 +15,7 @@ namespace DS.Simulation
 		{
 			await SceneLoader.LoadSceneAsync(
 				SceneLoader.MainMenuSceneName,
-				LoadSceneMode.Single,
-				showLoadingScreen: false);
+				LoadSceneMode.Single);
 		}
 	}
 }
