@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c54d0b4efddd46eba63a1a33eec4a891, type: 3}
   m_Name: AK47
   m_EditorClassIdentifier: 
-  <MaximumAmmoCount>k__BackingField: 120
+  <MaximumAmmoCount>k__BackingField: 180
   <MagazineAmmoCount>k__BackingField: 30
   <Damage>k__BackingField: 30
   <InitialProjectileForce>k__BackingField: 800
@@ -72,3 +72,38 @@ MonoBehaviour:
     m_RotationOrder: 4
   <FireRate>k__BackingField: 600
   <ReloadTime>k__BackingField: 2
+  <RecoilCooldown>k__BackingField: 0.5
+  <RecoilSmoothness>k__BackingField: 35
+  <RecoilRandomization>k__BackingField: 0.108
+  <Accuracy>k__BackingField: 0.02
+  <Recoil>k__BackingField:
+  - {x: 0, y: 0.7}
+  - {x: 0.5, y: 0.7}
+  - {x: 0.5, y: 0.7}
+  - {x: 0.6, y: 0.7}
+  - {x: 0.6, y: 1}
+  - {x: 0.5, y: 1}
+  - {x: 0.3, y: 1}
+  - {x: 0.3, y: 0.7}
+  - {x: 0.3, y: 0.7}
+  - {x: -0.3, y: 0.7}
+  - {x: -0.3, y: 0.7}
+  - {x: -0.5, y: 0.7}
+  - {x: -0.5, y: 0.7}
+  - {x: -0.5, y: 0.7}
+  - {x: -0.5, y: 0.7}
+  - {x: -0.6, y: 0.7}
+  - {x: -0.6, y: 0.7}
+  - {x: -0.6, y: 0.7}
+  - {x: -0.6, y: 0.7}
+  - {x: -0.5, y: 0.7}
+  - {x: -0.3, y: 1}
+  - {x: -0.3, y: 1}
+  - {x: -0.3, y: 1}
+  - {x: -0.3, y: 1}
+  - {x: 0.4, y: 0.8}
+  - {x: 0.3, y: 0.8}
+  - {x: 0.4, y: 0.8}
+  - {x: 0.4, y: 0.8}
+  - {x: 0.4, y: 0.8}
+  - {x: 0.4, y: 0.8}

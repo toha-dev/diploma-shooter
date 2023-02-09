@@ -2,6 +2,7 @@
     "name": "DS.UI.Base",
     "rootNamespace": "",
     "references": [
+        "GUID:1d54f7d92e5435a479e2eeb4aee26ed9",
         "GUID:b906efc872a1da242a09e42518bd5165",
         "GUID:6d52c86f80a477f4f88e465bd1e459f7",
         "GUID:9e24947de15b9834991c9d8411ea37cf",

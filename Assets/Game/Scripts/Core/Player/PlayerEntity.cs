@@ -5,8 +5,10 @@ using DS.Core.Weapons;
 using DS.Utils.Attributes;
 using JetBrains.Annotations;
 using StarterAssets;
+using UniRx;
 using UnityEngine;
 using Zenject;
+using Random = System.Random;
 
 namespace DS.Core.Player
 {
@@ -29,16 +31,20 @@ namespace DS.Core.Player
 
 		public GameObject GameObject => gameObject;
 
+		public IReadOnlyReactiveProperty<WeaponBehaviour> SelectedWeapon => _selectedWeapon;
+
 		public event Action EventPlayerSpawned;
 		public event Action EventPlayerDespawned;
 		public event Action EventPlayerDead;
 
-		private WeaponBehaviour _selectedWeapon;
+		private readonly ReactiveProperty<WeaponBehaviour> _selectedWeapon = new();
 		private CancellationTokenSource _cancellationToken;
+
+		private readonly RecoilSmoother _recoilSmoother = new();
 
 		private void Awake()
 		{
-			_selectedWeapon = PrimaryWeaponSlot ? PrimaryWeaponSlot : SecondaryWeaponSlot;
+			_selectedWeapon.Value = PrimaryWeaponSlot ? PrimaryWeaponSlot : SecondaryWeaponSlot;
 			EventPlayerSpawned?.Invoke();
 		}
 
@@ -58,6 +64,19 @@ namespace DS.Core.Player
 			_cancellationToken = null;
 		}
 
+		private void LateUpdate()
+		{
+			if (!_recoilSmoother.IsRecoilActive)
+			{
+				return;
+			}
+
+			_recoilSmoother.CalculateStep();
+
+			FirstPersonController.RotateX(_recoilSmoother.RotationAngle.y);
+			transform.Rotate(new Vector3(0, _recoilSmoother.RotationAngle.x, 0));
+		}
+
 		public void StartShooting()
 		{
 			IsShooting = true;
@@ -69,7 +88,7 @@ namespace DS.Core.Player
 				while (!_cancellationToken.IsCancellationRequested
 						&& IsShooting)
 				{
-					_selectedWeapon.TryShootToPosition(GetShootPosition(), HandleRecoil);
+					_selectedWeapon.Value.TryShootToPosition(GetShootPosition(), HandleRecoil);
 					await UniTask.Yield(PlayerLoopTiming.FixedUpdate, _cancellationToken.Token);
 				}
 			}
@@ -80,11 +99,11 @@ namespace DS.Core.Player
 
 				if (!Physics.Raycast(
 					cameraTransform.position,
-					cameraTransform.forward,
+					GetAccuracy(),
 					out var hit,
 					Mathf.Infinity))
 				{
-					return cameraTransform.forward * 1000f;
+					return cameraTransform.forward * 10f;
 				}
 
 				Debug.DrawRay(
@@ -93,17 +112,27 @@ namespace DS.Core.Player
 					Color.red);
 
 				return hit.point;
+
+				Vector3 GetAccuracy()
+				{
+					var accuracy = Vector3.one;
+
+					accuracy.x *= UnityEngine.Random.Range(-_selectedWeapon.Value.Config.Accuracy, _selectedWeapon.Value.Config.Accuracy);
+					accuracy.y *= UnityEngine.Random.Range(-_selectedWeapon.Value.Config.Accuracy, _selectedWeapon.Value.Config.Accuracy);
+					accuracy.z *= UnityEngine.Random.Range(-_selectedWeapon.Value.Config.Accuracy, _selectedWeapon.Value.Config.Accuracy);
+
+					Debug.LogWarning(accuracy);
+					
+					return Vector3.Normalize(cameraTransform.forward + accuracy);
+				}
 			}
 		}
 
-		private void HandleRecoil(Vector3 recoilOffset)
+		private void HandleRecoil(Vector2 recoilOffset)
 		{
-			var xOffset = recoilOffset.x;
-			var yOffset = recoilOffset.y;
-
-			FirstPersonController.RotateX(-xOffset);
-			FirstPersonCamera.transform.parent.transform.Rotate(new Vector3(-xOffset, 0, 0));
-			gameObject.transform.Rotate(new Vector3(0, yOffset, 0));
+			_recoilSmoother.SetRotation(
+				recoilOffset,
+				_selectedWeapon.Value.Config.RecoilSmoothness);
 		}
 
 		public void EndShooting()
@@ -113,7 +142,42 @@ namespace DS.Core.Player
 
 		public void Reload()
 		{
-			_selectedWeapon.TryReload();
+			_selectedWeapon.Value.TryReload();
+		}
+
+		private class RecoilSmoother
+		{
+			public bool IsRecoilActive => _rotation.x > 0.01f || _rotation.y > 0.01f;
+
+			public Vector2 RotationAngle { get; private set; }
+
+			private Vector2 _rotation;
+			private float _speed;
+
+			public void SetRotation(Vector2 rotation, float speed)
+			{
+				_rotation = rotation;
+				_speed = speed;
+			}
+
+			public void CalculateStep()
+			{
+				if (!IsRecoilActive)
+				{
+					return;
+				}
+
+				RotationAngle = Vector2.Lerp(
+					Vector2.zero,
+					_rotation,
+					_speed * Time.deltaTime);
+
+				_rotation -= RotationAngle;
+
+				//CinemachineCameraTarget.transform.Rotate(-target);
+				//_cinemachineTargetPitch -= target.x;
+				//Debug.LogWarning($"TARGET ROTATION OFFSET {RotationAngle}");
+			}
 		}
 
 		public class Factory : PlaceholderFactory<PlayerEntity>

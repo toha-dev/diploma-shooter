@@ -8,6 +8,7 @@ namespace DS.Utils.DataStructures
 		public void Dispose()
 		{
 			ForEach(x => x.Dispose());
+			Clear();
 		}
 	}
 }

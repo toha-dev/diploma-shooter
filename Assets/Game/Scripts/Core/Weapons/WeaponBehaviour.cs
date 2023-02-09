@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using DS.Core.Projectiles;
 using DS.Utils.Attributes;
 using JetBrains.Annotations;
+using UniRx;
 using UnityEngine;
 using Zenject;
 
@@ -12,7 +13,7 @@ namespace DS.Core.Weapons
 	public class WeaponBehaviour : MonoBehaviour
 	{
 		[field: SerializeField]
-		private WeaponConfig Config { get; [UsedImplicitly] set; }
+		public WeaponConfig Config { get; [UsedImplicitly] private set; }
 
 		[field: SerializeField]
 		private Animator Animator { get; [UsedImplicitly] set; }
@@ -29,15 +30,20 @@ namespace DS.Core.Weapons
 		[Inject]
 		private IProjectileManager _projectileManager;
 
-		private int _magazineAmmo;
-		private int _ammoLeft;
+		public IReadOnlyReactiveProperty<int> MagazineAmmo => _magazineAmmo;
+		public IReadOnlyReactiveProperty<int> AmmoLeft => _ammoLeft;
+
+		private readonly ReactiveProperty<int> _magazineAmmo = new();
+		private readonly ReactiveProperty<int> _ammoLeft = new();
+
+		private int _shootCount;
 
 		private CancellationTokenSource _cancellationToken;
 
 		private void Awake()
 		{
-			_magazineAmmo = Config.MagazineAmmoCount;
-			_ammoLeft = Config.MaximumAmmoCount - _magazineAmmo;
+			_magazineAmmo.Value = Config.MagazineAmmoCount;
+			_ammoLeft.Value = Config.MaximumAmmoCount - Config.MagazineAmmoCount;
 		}
 
 		private void OnEnable()
@@ -51,26 +57,33 @@ namespace DS.Core.Weapons
 			_cancellationToken = null;
 		}
 
-		public bool TryShootToPosition(Vector3 shootPosition, Action<Vector3> recoilCallback = null)
+		public bool TryShootToPosition(Vector3 shootPosition, Action<Vector2> recoilCallback = null)
 		{
 			var nextShootTime = LastShootTime + Config.FireDelay;
 
 			if (Time.realtimeSinceStartupAsDouble < nextShootTime
-				|| _magazineAmmo == 0
+				|| _magazineAmmo.Value == 0
 				|| IsReloading)
 			{
 				return false;
 			}
 
+			var recoilReset = LastShootTime + Config.RecoilCooldown;
+
+			if (Time.realtimeSinceStartupAsDouble > recoilReset)
+			{
+				_shootCount = 0;
+			}
+
 			ShootToPosition(shootPosition);
-			recoilCallback?.Invoke(new Vector3(1, 0.5f, 0));
+			recoilCallback?.Invoke(Config.GetRecoilOffset(_shootCount++));
 			return true;
 		}
 
 		public bool TryReload()
 		{
-			if (_magazineAmmo == Config.MagazineAmmoCount
-				|| _ammoLeft == 0
+			if (_magazineAmmo.Value == Config.MagazineAmmoCount
+				|| _ammoLeft.Value == 0
 				|| IsReloading)
 			{
 				return false;
@@ -85,7 +98,7 @@ namespace DS.Core.Weapons
 			IsReloading = true;
 			Debug.LogError("RELOAD STARTED");
 
-			var needToReload = Math.Min(Config.MagazineAmmoCount - _magazineAmmo, _ammoLeft);
+			var needToReload = Math.Min(Config.MagazineAmmoCount - _magazineAmmo.Value, _ammoLeft.Value);
 
 			await UniTask.Delay(
 				(int)(Config.ReloadTime * 1000),
@@ -93,8 +106,8 @@ namespace DS.Core.Weapons
 				PlayerLoopTiming.FixedUpdate,
 				_cancellationToken.Token);
 
-			_ammoLeft -= needToReload;
-			_magazineAmmo += needToReload;
+			_ammoLeft.Value -= needToReload;
+			_magazineAmmo.Value += needToReload;
 
 			Debug.LogError($"RELOAD END {_magazineAmmo}/{_ammoLeft}");
 			IsReloading = false;
@@ -102,7 +115,7 @@ namespace DS.Core.Weapons
 
 		private void ShootToPosition(Vector3 shootPosition)
 		{
-			_magazineAmmo--;
+			_magazineAmmo.Value--;
 			LastShootTime = Time.realtimeSinceStartupAsDouble;
 
 			var position = BarrelLocation.position;

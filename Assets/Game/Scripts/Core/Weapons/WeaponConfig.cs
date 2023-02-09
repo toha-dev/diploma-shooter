@@ -1,4 +1,6 @@
-﻿using DS.Utils.Attributes;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using DS.Utils.Attributes;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -40,7 +42,31 @@ namespace DS.Core.Weapons
 		[field: Tooltip("Reload time in seconds")]
 		public float ReloadTime { get; [UsedImplicitly] private set; }
 
+		[field: SerializeField]
+		public float RecoilCooldown { get; [UsedImplicitly] private set; }
+
+		[field: SerializeField]
+		public float RecoilSmoothness { get; [UsedImplicitly] private set; }
+
+		[field: SerializeField]
+		[field: Range(0, 1)]
+		private float RecoilRandomization { get; [UsedImplicitly] set; }
+
+		[field: SerializeField]
+		[field: Range(0, 1)]
+		public float Accuracy { get; [UsedImplicitly] set; }
+
+		[field: SerializeField][SuppressMessage("ReSharper", "CollectionNeverUpdated.Local")]
+		private List<Vector2> Recoil { get; [UsedImplicitly] set; }
+
 		public double FireDelay => (60d / FireRate);
+
+		public Vector2 GetRecoilOffset(int shoot)
+		{
+			return Recoil[shoot] * Random.Range(
+				1f - RecoilRandomization,
+				1f + RecoilRandomization);
+		}
 
 		public float CalculateDamage(float distanceInMeters)
 		{

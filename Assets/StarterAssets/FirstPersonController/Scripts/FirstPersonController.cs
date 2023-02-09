@@ -54,6 +54,10 @@ namespace StarterAssets
 		// cinemachine
 		private float _cinemachineTargetPitch;
 
+		// recoil
+		private float _rotationOffset;
+		private float _rotationSpeed;
+
 		// player
 		private float _speed;
 		private float _rotationVelocity;
@@ -64,7 +68,8 @@ namespace StarterAssets
 		private float _jumpTimeoutDelta;
 		private float _fallTimeoutDelta;
 
-	
+		public float CurrentSpeed => _speed;
+
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 		private PlayerInput _playerInput;
 #endif
@@ -88,7 +93,8 @@ namespace StarterAssets
 
 		public void RotateX(float offsetX)
 		{
-			_cinemachineTargetPitch += offsetX;
+			_cinemachineTargetPitch -= offsetX;
+			CinemachineCameraTarget.transform.Rotate(new Vector3(-offsetX, 0, 0));
 		}
 
 		private void Awake()
